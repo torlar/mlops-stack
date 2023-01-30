@@ -1,0 +1,27 @@
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+
+name: Deploy code to Windows Virtual Machine
+
+jobs:
+  remote-git-pull:
+    runs-on: win2019
+    steps:
+      - name: Log in to Azure PowerShell
+        uses: azure/login@v1
+        with:
+          creds: '${{secrets.DSB_AZURE_SA_CREDENTIALS}}'
+          enable-AzPSSession: true
+      - name: Azure VM Login
+        uses: Azure/powershell@v1
+        with:
+          inlineScript: | 
+            Enter-PSSession dsbapp0103 -Credential '${{secrets.DSB_SA_CREDENTIALS}}'
+            cd C:\
+            git clone https://${{secrets.TOKEN}}@github.com/${{secrets.TOKEN_USERNAME}}/DanskeStatsbaner/flux.old_solution_code.git
+            git push https://github.com/<GITHUB_USERNAME>/<REPOSITORY_NAME>.git 
+            
+          azPSVersion: "latest"
