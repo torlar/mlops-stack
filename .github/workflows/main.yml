@@ -2,26 +2,17 @@ on:
   push:
     branches:
       - main
-      - 'feature/**'
-
-name: Deploy code to Windows Virtual Machine
+  
+name: Deploy code to Windows Virtual Machine dsbapp0103
 
 jobs:
   remote-git-pull:
-    runs-on: win2019
+    runs-on: dsb_win
     steps:
-      - name: Log in to Azure PowerShell
-        uses: azure/login@v1
-        with:
-          creds: '${{secrets.DSB_AZURE_SA_CREDENTIALS}}'
-          enable-AzPSSession: true
-      - name: Azure VM Login
-        uses: Azure/powershell@v1
-        with:
-          inlineScript: | 
-            Enter-PSSession dsbapp0103 -Credential '${{secrets.DSB_SA_CREDENTIALS}}'
-            cd C:\
-            git clone https://${{secrets.TOKEN}}@github.com/${{secrets.TOKEN_USERNAME}}/DanskeStatsbaner/flux.old_solution_code.git
-            git push https://github.com/<GITHUB_USERNAME>/<REPOSITORY_NAME>.git 
-            
-          azPSVersion: "latest"
+      - name: git clone and pull on remote desktop dsbapp0103
+        shell: pwsh
+        run: |
+            Enter-PSSession dsbapp0103 -Credential DSB\THSL0312
+            cd C:\Users\THSL0312\Documents
+            git clone git@github.com:databricks/mlops-stack.git
+            git pull git@github.com:databricks/mlops-stack.git
